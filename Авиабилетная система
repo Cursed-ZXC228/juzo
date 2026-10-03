@@ -1,0 +1,334 @@
+from datetime import datetime, timedelta
+
+
+# =========================
+# Аэропорт
+# =========================
+
+class Airport:
+    def __init__(self, code, name):
+        self.code = code
+        self.name = name
+
+
+# =========================
+# Место
+# =========================
+
+class Seat:
+    def __init__(self, number, seat_class):
+        self.number = number
+        self.seat_class = seat_class
+        self.occupied = False
+
+
+# =========================
+# Рейс
+# =========================
+
+class Flight:
+    def __init__(self, number, departure, arrival, departure_time, duration):
+        self.number = number
+        self.departure = departure
+        self.arrival = arrival
+        self.departure_time = departure_time
+        self.duration = duration
+        self.seats = []
+
+        # Дополнительные условия
+        self.meals = False
+        self.extra_baggage = False
+
+    def arrival_time(self):
+        return self.departure_time + self.duration
+
+
+# =========================
+# Авиакомпания
+# =========================
+
+class Airline:
+    def __init__(self):
+        self.airports = []
+        self.flights = []
+
+    # Добавить аэропорт
+    def add_airport(self, airport):
+        self.airports.append(airport)
+
+    # Добавить рейс
+    def add_flight(self, flight):
+        self.flights.append(flight)
+
+    # Настроить места
+    def add_seat(self, flight, number, seat_class):
+        flight.seats.append(
+            Seat(number, seat_class)
+        )
+
+    # Забронировать место
+    def book_seat(self, flight_number, seat_class):
+        for flight in self.flights:
+
+            if flight.number == flight_number:
+
+                for seat in flight.seats:
+
+                    if (
+                        seat.seat_class == seat_class
+                        and not seat.occupied
+                    ):
+                        seat.occupied = True
+
+                        print(
+                            "Место",
+                            seat.number,
+                            "забронировано"
+                        )
+
+                        return
+
+                print("Свободных мест нет")
+                return
+
+        print("Рейс не найден")
+
+    # Найти ближайшие рейсы
+    def find_flights(self, departure, arrival):
+
+        result = []
+
+        for flight in self.flights:
+
+            if (
+                flight.departure.code == departure
+                and flight.arrival.code == arrival
+            ):
+                result.append(flight)
+
+        result.sort(
+            key=lambda x: x.departure_time
+        )
+
+        return result
+
+    # Показать план салона
+    def show_seats(self, flight_number):
+
+        for flight in self.flights:
+
+            if flight.number == flight_number:
+
+                print()
+                print("Рейс:", flight.number)
+                print(
+                    flight.departure.code,
+                    "->",
+                    flight.arrival.code
+                )
+
+                print()
+
+                for seat in flight.seats:
+
+                    if seat.occupied:
+                        status = "ЗАНЯТО"
+                    else:
+                        status = "СВОБОДНО"
+
+                    print(
+                        seat.number,
+                        "-",
+                        seat.seat_class,
+                        "-",
+                        status
+                    )
+
+                return
+
+        print("Рейс не найден")
+
+    # Найти несколько свободных мест рядом
+    def find_seats(self, flight_number, seat_class, count):
+
+        for flight in self.flights:
+
+            if flight.number == flight_number:
+
+                free = []
+
+                for seat in flight.seats:
+
+                    if (
+                        seat.seat_class == seat_class
+                        and not seat.occupied
+                    ):
+                        free.append(seat)
+
+                if len(free) >= count:
+
+                    print(
+                        "Можно разместить рядом:",
+                        end=" "
+                    )
+
+                    for seat in free[:count]:
+                        print(seat.number, end=" ")
+
+                    print()
+                    return
+
+                print("Недостаточно свободных мест")
+                return
+
+
+# =========================
+# Создание системы
+# =========================
+
+airline = Airline()
+
+
+# =========================
+# Аэропорты
+# =========================
+
+fra = Airport(
+    "FRA",
+    "Франкфурт"
+)
+
+jfk = Airport(
+    "JFK",
+    "Нью-Йорк"
+)
+
+airline.add_airport(fra)
+airline.add_airport(jfk)
+
+
+# =========================
+# Рейс
+# =========================
+
+flight = Flight(
+    "LH400",
+    fra,
+    jfk,
+    datetime(2026, 10, 4, 8, 30),
+    timedelta(hours=8)
+)
+
+airline.add_flight(flight)
+
+
+# =========================
+# Места
+# =========================
+
+# Бизнес
+airline.add_seat(flight, "1A", "Бизнес")
+airline.add_seat(flight, "1B", "Бизнес")
+airline.add_seat(flight, "1C", "Бизнес")
+airline.add_seat(flight, "1D", "Бизнес")
+
+# Эконом
+airline.add_seat(flight, "2A", "Эконом")
+airline.add_seat(flight, "2B", "Эконом")
+airline.add_seat(flight, "2C", "Эконом")
+airline.add_seat(flight, "2D", "Эконом")
+airline.add_seat(flight, "2E", "Эконом")
+airline.add_seat(flight, "2F", "Эконом")
+
+airline.add_seat(flight, "3A", "Эконом")
+airline.add_seat(flight, "3B", "Эконом")
+airline.add_seat(flight, "3C", "Эконом")
+airline.add_seat(flight, "3D", "Эконом")
+airline.add_seat(flight, "3E", "Эконом")
+airline.add_seat(flight, "3F", "Эконом")
+
+
+# =========================
+# Дополнительные условия
+# =========================
+
+flight.meals = True
+flight.extra_baggage = True
+
+
+# =========================
+# Бронирование
+# =========================
+
+airline.book_seat(
+    "LH400",
+    "Эконом"
+)
+
+airline.book_seat(
+    "LH400",
+    "Бизнес"
+)
+
+
+# =========================
+# План салона
+# =========================
+
+airline.show_seats("LH400")
+
+
+# =========================
+# Поиск рейсов
+# =========================
+
+print()
+print("Ближайшие рейсы FRA -> JFK:")
+
+flights = airline.find_flights(
+    "FRA",
+    "JFK"
+)
+
+for flight in flights:
+
+    print(
+        flight.number,
+        "|",
+        flight.departure_time,
+        "|",
+        "Прилёт:",
+        flight.arrival_time()
+    )
+
+
+# =========================
+# Поиск мест рядом
+# =========================
+
+print()
+print("Поиск 3 мест в экономе:")
+
+airline.find_seats(
+    "LH400",
+    "Эконом",
+    3
+)
+
+
+# =========================
+# Специальные условия
+# =========================
+
+print()
+print("Дополнительные условия:")
+
+print(
+    "Питание:",
+    "Да" if flight.meals else "Нет"
+)
+
+print(
+    "Дополнительный багаж:",
+    "Да" if flight.extra_baggage else "Нет"
+)
