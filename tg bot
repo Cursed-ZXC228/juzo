@@ -1,0 +1,30 @@
+import telebot
+from random import randint
+TOKEN=''
+users={}
+
+bot=telebot.TeleBot(TOKEN)
+@bot.message_handler(content_types=['text'])
+def game(message):
+    text=message.text.strip()
+    if text.lover()=='начать':
+        users[message.chat.id]=randint(1,100)
+        bot.send_message(message.chat.id,'вам загадано число')
+    elif text.isdigit():
+        if message.chat.id not in users:
+            bot.send_message(message.chat.id,'напишите начать!')
+            return
+        n=int(text)
+        if n>users[message.chat.id]:
+            bot.send_message(message.chat.id,'слишком много')
+        elif n<users[message.chat.id]:
+            bot.send_message(message.chat.id,'число больше')
+        else:
+            bot.send_message(message.chat.id,'угадали')
+            del users[message.chat.id]
+
+
+
+
+print('сервер запущен')
+bot.polling()
