@@ -1,0 +1,23 @@
+import telebot          
+TOKEN='8388571851:AAHS8dk7YOwD4elbXQlX1LCxciV6IkObwMw'
+users={}
+
+bot=telebot.TeleBot(TOKEN)
+keyboard = telebot.types.ReplyKeyboardMarkup()
+button_1 = telebot.types.KeyboardButton('Кнопка 1')
+button_2 = telebot.types.KeyboardButton('Кнопка 2')
+keyboard.add(button_1, button_2)
+@bot.message_handler(content_types=['text'])
+def handle_start(message):
+    bot.send_message(
+        message.chat.id, 
+        'Привет!', 
+        reply_markup=keyboard # отправляем клавиатуру
+    )
+
+
+
+
+
+print('сервер запущен')
+bot.polling()
