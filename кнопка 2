@@ -1,0 +1,22 @@
+import telebot          
+TOKEN='8388571851:AAHS8dk7YOwD4elbXQlX1LCxciV6IkObwMw'
+users={}
+bot=telebot.TeleBot(TOKEN)
+keyboard = telebot.types.InlineKeyboardMarkup()
+button_link = telebot.types.InlineKeyboardButton('Ссылка', url='https://robotmovavi.ru/')
+keyboard.add(button_link)
+
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(
+        message.chat.id, 
+        'Привет! Держи ссылку на крутую школу:', 
+        reply_markup=keyboard
+    )
+
+
+
+
+print('сервер запущен')
+bot.polling()
